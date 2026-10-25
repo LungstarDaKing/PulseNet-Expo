@@ -1,0 +1,109 @@
+{
+  "expo": {
+    "name": "PulseNet",
+    "slug": "pulsenet",
+    "scheme": "pulsenet",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+   
+    "splash": {
+      "image": "./assets/pulsenet_logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0B0B10"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.pulsenet.pulsenet",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "PulseNet adds your location to emergency alerts and finds help near you.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "PulseNet keeps sharing your location during an emergency or a walk.",
+        "NSMicrophoneUsageDescription": "Used only for the distress-word listener you arm yourself.",
+        "NSSpeechRecognitionUsageDescription": "Used only for the distress-word listener you arm yourself.",
+        "NSBluetoothAlwaysUsageDescription": "Used to read heart rate from your Bluetooth wearable."
+      }
+    },
+    "android": {
+      "package": "com.pulsenet.pulsenet",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "backgroundColor": "#0B0B10",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "SEND_SMS",
+        "CALL_PHONE",
+        "RECORD_AUDIO",
+        "VIBRATE",
+        "POST_NOTIFICATIONS",
+        "BLUETOOTH_SCAN",
+        "BLUETOOTH_CONNECT"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-sharing",
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/pulsenet_logo.png",
+          "backgroundColor": "#0B0B10",
+          "imageWidth": 200
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 36,
+            "targetSdkVersion": 36,
+            "minSdkVersion": 24
+          }
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "PulseNet keeps sharing your location during an emergency or a walk.",
+          "isAndroidBackgroundLocationEnabled": false
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#E11D48"
+        }
+      ],
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "Used only for the distress-word listener you arm yourself.",
+          "speechRecognitionPermission": "Used only for the distress-word listener you arm yourself.",
+          "androidSpeechServicePackages": [
+            "com.google.android.googlequicksearchbox"
+          ]
+        }
+      ],
+      [
+        "react-native-ble-plx",
+        {
+          "isBackgroundEnabled": false,
+          "neverForLocation": true,
+          "bluetoothAlwaysPermission": "Used to read heart rate from your Bluetooth wearable."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
