@@ -4,13 +4,15 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, AppState, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 import { LockScreen } from '../components/LockScreen';
-import { Onboarding } from '../components/Onboarding';
+import { Onboarding, OnboardingChoice } from '../components/Onboarding';
 import { C } from '../constants/theme';
 import { setSecureScreen } from '../lib/native';
 import { initNotifications } from '../lib/notify';
 import { K, getBool, setBool } from '../lib/storage';
-import { handleTap } from '../services/distress';
+import { installCrashRecorder } from '../lib/crashLog';
+import { handleTap, initDistress } from '../services/distress';
 import { getAppLockEnabled, setDuressHandler } from '../services/pinLock';
 import { restoreCompanion, restoreWalk } from '../services/walk';
 import { safetyState } from '../services/safetyState';
@@ -18,10 +20,13 @@ import { dispatchSos, isEmergencyActive } from '../services/sos';
 import { restoreRide } from '../services/taxi';
 import { award } from '../services/safePoints';
 
+installCrashRecorder();
+
 type Phase = 'loading' | 'onboarding' | 'locked' | 'ready';
 
 export default function Root() {
   const [phase, setPhase] = useState<Phase>('loading');
+  const [after, setAfter] = useState<OnboardingChoice | null>(null);
   const router = useRouter();
   const response = Notifications.useLastNotificationResponse();
   const handled = useRef<string | null>(null);
@@ -36,6 +41,7 @@ export default function Root() {
         void dispatchSos({ emergencyType: 'duress PIN', silent: true });
       });
       await safetyState.load();
+      await initDistress();
       const seen = await getBool(K.onboarded);
       const lock = await getAppLockEnabled();
       void restoreWalk();
@@ -60,13 +66,24 @@ export default function Root() {
     const id = response?.notification.request.identifier;
     if (phase !== 'ready' || !response || handled.current === id) return;
     handled.current = id ?? null;
-    if (response.notification.request.content.data?.fakeCall) router.push('/fake-call-live');
+    const data = response.notification.request.content.data as { fakeCall?: boolean; alertId?: string } | undefined;
+    if (data?.fakeCall) router.push('/fake-call-live');
+    else if (data?.alertId) router.push({ pathname: '/alert-detail', params: { id: data.alertId } });
   }, [response, phase, router]);
 
-  const onboarded = useCallback(async () => {
+  const onboarded = useCallback(async (choice: OnboardingChoice) => {
     await setBool(K.onboarded, true);
+    setAfter(choice);
     setPhase('ready');
   }, []);
+
+  // after onboarding, open the account screen once the navigator exists
+  useEffect(() => {
+    if (phase !== 'ready' || !after || after === 'skip') return;
+    // not cleared on cleanup: setAfter(null) below re-runs this effect, which would cancel the redirect
+    setTimeout(() => router.push({ pathname: '/auth', params: { mode: after } }), 50);
+    setAfter(null);
+  }, [phase, after, router]);
 
   if (phase === 'loading') return <View style={{ flex: 1, backgroundColor: C.bg, justifyContent: 'center' }}><ActivityIndicator color={C.crimson} size="large" /></View>;
   if (phase === 'onboarding') return <SafeAreaProvider><StatusBar style="light" /><Onboarding onDone={onboarded} /></SafeAreaProvider>;
@@ -77,8 +94,14 @@ export default function Root() {
     <View style={{ flex: 1 }} onTouchStart={() => handleTap()}>
       <SafeAreaProvider>
         <StatusBar style="light" />
+        <ErrorBoundary>
         <Stack screenOptions={{ headerStyle: { backgroundColor: C.bg }, headerTintColor: C.text, headerTitleAlign: 'center', contentStyle: { backgroundColor: C.bg } }}>
-          <Stack.Screen name="index" options={{ title: 'PulseNet' }} />
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="auth" options={{ title: 'Account' }} />
+          <Stack.Screen name="report-emergency" options={{ title: 'Report Emergency' }} />
+          <Stack.Screen name="assistant" options={{ title: 'Pulse AI Assistant' }} />
+          <Stack.Screen name="my-reports" options={{ title: 'My reports' }} />
+          <Stack.Screen name="alert-detail" options={{ title: 'Alert' }} />
           <Stack.Screen name="sos" options={{ title: 'Emergency SOS', gestureEnabled: false }} />
           <Stack.Screen name="stealth" options={{ headerShown: false, gestureEnabled: false }} />
           <Stack.Screen name="fake-call-live" options={{ headerShown: false, gestureEnabled: false }} />
@@ -99,7 +122,9 @@ export default function Root() {
           <Stack.Screen name="vitals" options={{ title: 'Vitals' }} />
           <Stack.Screen name="profiles" options={{ title: 'Safety profiles' }} />
           <Stack.Screen name="audit" options={{ title: 'Audit log' }} />
+          <Stack.Screen name="cloud-status" options={{ title: 'Backend connection' }} />
         </Stack>
+        </ErrorBoundary>
       </SafeAreaProvider>
     </View>
   );

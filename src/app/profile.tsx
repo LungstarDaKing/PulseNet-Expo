@@ -1,11 +1,11 @@
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Alert, Switch } from 'react-native';
+import { Alert, Switch, View } from 'react-native';
 import { Btn, Card, Field, H, Notice, Row, Screen, T } from '../components/ui';
 import { C } from '../constants/theme';
 import { nativeAvailable } from '../lib/native';
 import { secureGetJSON, secureSetJSON, wipeAllData } from '../lib/storage';
-import { distressSupported } from '../services/distress';
+import { distressSupported, isDistressEnabled, setDistressEnabled } from '../services/distress';
 import { award } from '../services/safePoints';
 import { clearAppLock, clearDuressPin, getAppLockEnabled, hasDuressPin, isValidPinFormat, setAppLockPin, setDuressPin } from '../services/pinLock';
 import { getLocationSharing, getSettings, getUserName, setLocationSharing, setUserName, updateSettings } from '../services/settings';
@@ -22,6 +22,7 @@ export default function Profile() {
   const [duress, setDuress] = useState(false);
   const [drill, setDrill] = useState(false);
   const [auto, setAuto] = useState(false);
+  const [voice, setVoice] = useState(isDistressEnabled());
   const [pin, setPin] = useState('');
   const [dpin, setDpin] = useState('');
   const [msg, setMsg] = useState('');
@@ -68,6 +69,7 @@ export default function Profile() {
       <Card>
         <Row><T bold style={{ flex: 1 }}>Include my location in alerts</T><Switch value={share} onValueChange={(v) => { setShare(v); void setLocationSharing(v); }} trackColor={{ true: C.teal }} /></Row>
         <Row><T bold style={{ flex: 1 }}>SOS drill mode (sends nothing)</T><Switch value={drill} onValueChange={(v) => { setDrill(v); void updateSettings({ drillMode: v }); }} trackColor={{ true: C.amber }} /></Row>
+        {distressSupported() && <Row><View style={{ flex: 1 }}><T bold>Voice distress listener</T><T dim small>4 quick taps, then say "help me". Off by default so normal taps never start the microphone.</T></View><Switch value={voice} onValueChange={(v) => void setDistressEnabled(v).then(setVoice)} trackColor={{ true: C.amber }} /></Row>}
         <Row><T bold style={{ flex: 1 }}>Auto-text contacts on critical heart rate</T><Switch value={auto} onValueChange={(v) => { setAuto(v); void updateSettings({ vitalsAutoAlert: v }); }} trackColor={{ true: C.amber }} /></Row>
       </Card>
 
@@ -93,7 +95,7 @@ export default function Profile() {
       </Card>
 
       <Btn outline label="Audit log" color={C.textDim} onPress={() => router.push('/audit')} />
-      <Btn outline color={C.crimson} label="Forget me: erase all data" onPress={() => Alert.alert('Erase everything?', 'Contacts, medical details, PIN, history and settings will be deleted from this phone.', [{ text: 'Cancel' }, { text: 'Erase', style: 'destructive', onPress: () => void wipeAllData().then(() => Alert.alert('Erased', 'Close and reopen PulseNet.')) }])} />
+      <Btn outline color={C.crimson} label="Forget me: erase all data" onPress={() => Alert.alert('Erase everything?', 'Contacts, medical details, PIN, history and settings will be deleted from this phone.', [{ text: 'Cancel' }, { text: 'Erase', style: 'destructive', onPress: () => void import('../services/auth').then((m) => m.signOutLocal()).catch(() => undefined).then(() => wipeAllData()).then(() => Alert.alert('Erased', 'Close and reopen PulseNet.')) }])} />
     </Screen>
   );
 }

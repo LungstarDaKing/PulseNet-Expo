@@ -1,0 +1,7 @@
+# Minimal Supabase CLI config. `supabase link --project-ref <ref>` before deploying.
+[functions.pulse-ai]
+verify_jwt = true
+
+# Called by a Database Webhook with a shared secret header, not by signed-in users.
+[functions.notify-nearby]
+verify_jwt = false

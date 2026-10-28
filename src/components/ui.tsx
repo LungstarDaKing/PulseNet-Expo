@@ -21,7 +21,7 @@ export const T = ({ children, dim, small, bold, color, style }: { children: Reac
   <Text style={[{ color: color ?? (dim ? C.textDim : C.text), fontSize: small ? 13 : 15, lineHeight: small ? 18 : 21 }, bold && { fontWeight: '700' }, style]}>{children}</Text>
 );
 
-export function Btn({ label, onPress, color = C.crimson, outline, disabled, busy, small }: { label: string; onPress: () => void; color?: string; outline?: boolean; disabled?: boolean; busy?: boolean; small?: boolean }) {
+export function Btn({ label, onPress, color = C.brand, outline, disabled, busy, small }: { label: string; onPress: () => void; color?: string; outline?: boolean; disabled?: boolean; busy?: boolean; small?: boolean }) {
   return (
     <Pressable
       accessibilityRole="button"
@@ -30,7 +30,7 @@ export function Btn({ label, onPress, color = C.crimson, outline, disabled, busy
       onPress={onPress}
       style={({ pressed }) => [st.btn, small && { paddingVertical: 8 }, outline ? { borderColor: color, borderWidth: 1.5 } : { backgroundColor: color }, (disabled || busy) && { opacity: 0.5 }, pressed && { opacity: 0.8 }]}
     >
-      {busy ? <ActivityIndicator color="#fff" /> : <Text style={[st.btnText, outline && { color }]}>{label}</Text>}
+      {busy ? <ActivityIndicator color="#fff" /> : <Text style={[st.btnText, { color: outline ? color : color === C.brand ? '#04231A' : '#fff' }]}>{label}</Text>}
     </Pressable>
   );
 }

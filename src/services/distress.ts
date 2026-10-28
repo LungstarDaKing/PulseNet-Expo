@@ -1,4 +1,5 @@
 import { matchDistress } from '../data/distressPhrases';
+import { getBool, setBool } from '../lib/storage';
 import { logEvent } from './audit';
 import { dispatchSos } from './sos';
 import { safetyState } from './safetyState';
@@ -24,12 +25,15 @@ let armed = false;
 let disarmTimer: ReturnType<typeof setTimeout> | null = null;
 let subs: { remove: () => void }[] = [];
 let mod: any = null;
+let loadTried = false;
+let enabled = false;
 const listeners = new Set<(armed: boolean) => void>();
 export const onArmed = (l: (a: boolean) => void) => { listeners.add(l); return () => { listeners.delete(l); }; };
 export const isArmed = () => armed;
 
 function load(): any {
-  if (mod) return mod;
+  if (mod || loadTried) return mod;
+  loadTried = true; // a missing native module (Expo Go) will not appear later: do not retry on every tap
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     mod = require('expo-speech-recognition').ExpoSpeechRecognitionModule;
@@ -40,8 +44,20 @@ function load(): any {
 }
 export const distressSupported = () => load() != null;
 
+/** The tap gesture only works when the user has switched the listener on in Settings. */
+export const isDistressEnabled = () => enabled;
+export async function initDistress(): Promise<void> {
+  enabled = (await getBool('distress_enabled', false)) && distressSupported();
+}
+export async function setDistressEnabled(v: boolean): Promise<boolean> {
+  enabled = v && distressSupported();
+  await setBool('distress_enabled', enabled);
+  if (!enabled) disarm();
+  return enabled;
+}
+
 export function handleTap(now = Date.now()): void {
-  if (armed) return;
+  if (!enabled || armed) return;
   const r = tapStep(taps, now);
   taps = r.taps;
   if (r.armed) void arm();

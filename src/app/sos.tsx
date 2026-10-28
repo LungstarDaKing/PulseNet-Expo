@@ -58,7 +58,7 @@ export default function Sos() {
           <Text style={{ color: C.crimson, fontSize: 96, fontWeight: '900' }}>{left}</Text>
           <T dim>Sending alert to your emergency contacts</T>
           <Btn label="Cancel" outline color={C.text} onPress={() => router.back()} />
-          <Btn label="Send now" onPress={() => void fire()} />
+          <Btn label="Send now" color={C.crimson} onPress={() => void fire()} />
         </View>
       </Screen>
     );
@@ -72,11 +72,11 @@ export default function Sos() {
       <Card>
         <T bold>Call for help now</T>
         <Row gap={8}>
-          <View style={{ flex: 1 }}><Btn label="Police 10111" onPress={() => void dialEmergencyNumber(EMERGENCY_NUMBERS.police)} /></View>
-          <View style={{ flex: 1 }}><Btn label="Ambulance" onPress={() => void dialEmergencyNumber(EMERGENCY_NUMBERS.ambulance)} /></View>
+          <View style={{ flex: 1 }}><Btn label="Police 10111" color={C.crimson} onPress={() => void dialEmergencyNumber(EMERGENCY_NUMBERS.police)} /></View>
+          <View style={{ flex: 1 }}><Btn label="Ambulance" color={C.crimson} onPress={() => void dialEmergencyNumber(EMERGENCY_NUMBERS.ambulance)} /></View>
         </Row>
-        <Btn outline label="Any mobile: 112" onPress={() => void dialEmergencyNumber(EMERGENCY_NUMBERS.general)} />
-        <Btn outline label="GBV Command Centre" onPress={() => void dialEmergencyNumber(EMERGENCY_NUMBERS.gbvCommandCentre)} />
+        <Btn outline color={C.crimson} label="Any mobile: 112" onPress={() => void dialEmergencyNumber(EMERGENCY_NUMBERS.general)} />
+        <Btn outline color={C.crimson} label="GBV Command Centre" onPress={() => void dialEmergencyNumber(EMERGENCY_NUMBERS.gbvCommandCentre)} />
       </Card>
       <Btn label="I am safe" color={C.ok} onPress={() => void safe()} />
       {drill && <Btn outline color={C.textDim} label="Turn drill mode off" onPress={async () => { await updateSettings({ drillMode: false }); setDrill(false); }} />}

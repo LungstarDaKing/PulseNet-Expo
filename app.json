@@ -7,12 +7,6 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
-   
-    "splash": {
-      "image": "./assets/pulsenet_logo.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#0B0B10"
-    },
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.pulsenet.pulsenet",
@@ -35,16 +29,18 @@
       },
       "predictiveBackGestureEnabled": false,
       "permissions": [
-        "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION",
-        "ACCESS_BACKGROUND_LOCATION",
-        "SEND_SMS",
-        "CALL_PHONE",
-        "RECORD_AUDIO",
-        "VIBRATE",
-        "POST_NOTIFICATIONS",
-        "BLUETOOTH_SCAN",
-        "BLUETOOTH_CONNECT"
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.SEND_SMS",
+        "android.permission.CALL_PHONE",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.VIBRATE",
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.BLUETOOTH_SCAN",
+        "android.permission.BLUETOOTH_CONNECT",
+        "android.permission.CAMERA",
+        "android.permission.BLUETOOTH",
+        "android.permission.BLUETOOTH_ADMIN"
       ]
     },
     "plugins": [
@@ -100,10 +96,28 @@
           "neverForLocation": true,
           "bluetoothAlwaysPermission": "Used to read heart rate from your Bluetooth wearable."
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "PulseNet attaches photos you choose to an incident report.",
+          "cameraPermission": "PulseNet takes a photo you choose to attach to an incident report."
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "f6cb5b18-b379-49b1-94e9-b88e6fb6f27b"
+      }
+    },
+    "owner": "lungstardaking"
   }
 }

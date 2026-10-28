@@ -90,3 +90,10 @@ Expo Go: all screens run, but silent SMS/calls fall back to the messaging app / 
 - `expo export --platform android`: JavaScript bundle compiled (Hermes, 3.2 MB).
 - `expo-doctor`: 18 of 20 checks passed. 2 could not run: no network to exp.host in the build sandbox (config schema check, React Native Directory check). **Re-run `npx expo-doctor` on your machine.**
 - **Not done:** EAS cloud build (needs your Expo login), the Kotlin module compile, any run on a phone, any call to the live public APIs, lint. No APK exists yet.
+
+
+## 7. Update: Supabase backend and redesigned dashboard
+Added: Home / Map / Alerts / Profile tabs, Report Emergency (type, details, photos, location), Pulse AI assistant, community alerts with Realtime, push alerts, accounts. See `docs/SUPABASE.md`.
+Verified here: database schema and 49 row-level-security checks on a real Postgres 16 (`supabase/tests`), 80 unit tests, TypeScript strict, Android bundle build, native prebuild.
+Not verified here: the two Edge Functions (Deno) were not run, Realtime and push were not run end to end, the map's tile loading was not run, nothing was run on a phone.
+Deliberate differences from the mock-up: the AI never says it shared your location or contacted authorities (it cannot), unverified reports are labelled as such, and the app never fakes alerts when signed out or offline.

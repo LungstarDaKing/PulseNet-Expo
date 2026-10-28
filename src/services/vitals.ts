@@ -82,8 +82,10 @@ const HR_CHAR = '2a37';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 let manager: any = null;
+let managerTried = false;
 function getManager(): any {
-  if (manager) return manager;
+  if (manager || managerTried) return manager;
+  managerTried = true;
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { BleManager } = require('react-native-ble-plx');

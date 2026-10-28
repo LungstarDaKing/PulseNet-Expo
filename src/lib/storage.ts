@@ -111,6 +111,7 @@ export const SECURE_KEYS = [
   'safe_places_user',
   'companion_state',
   'walk_state',
+  'report_outbox',
 ] as const;
 
 /** "Forget me": wipes every trace of PulseNet data on this device. */
