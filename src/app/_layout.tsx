@@ -33,7 +33,7 @@ export default function Root() {
 
   useEffect(() => {
     (async () => {
-      setSecureScreen(true); // block screenshots and hide the app-switcher preview
+      setSecureScreen(false); // screenshots and screen recording allowed
       await initNotifications();
       // Duress PIN: looks like a normal unlock but silently alerts contacts.
       setDuressHandler(() => {
